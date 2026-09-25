@@ -150,7 +150,18 @@ img{max-width:100%; display:block;}
 .btn-primary:hover .arrow{transform:translateX(-4px);}
 
 /* ================= SELECT ================= */
-#screen-select{align-items:center; justify-content:center; padding:28px 20px;}
+#screen-select{
+  align-items:center;
+  justify-content:center;
+  padding:28px 20px;
+  position:relative;
+}
+  .select-back-btn{
+  position:absolute;
+  top:16px;
+  right:18px;
+  z-index:10;
+}
 .select-wrap{max-width:640px; width:100%; text-align:center; display:flex; flex-direction:column; gap:26px; align-items:center;}
 .select-title{font-size:clamp(1.5rem,4vw,2rem); color:var(--coffee-dark);}
 .char-grid{display:flex; gap:22px; flex-wrap:wrap; justify-content:center; width:100%;}
@@ -485,6 +496,7 @@ img{max-width:100%; display:block;}
 
   <!-- ============ SCREEN 2: SELECT ============ -->
   <section id="screen-select" class="screen">
+    <button class="back-btn select-back-btn" id="btnBackSelect" aria-label="رجوع">→</button>
     <div class="select-wrap">
       <h2 class="select-title">مع مين تبي تسولف اليوم؟</h2>
       <div class="char-grid">
@@ -637,7 +649,11 @@ document.getElementById('btnBack').addEventListener('click', ()=>{
   goScreen('select');
 
 });
+document.getElementById('btnBackSelect').addEventListener('click', ()=>{
 
+  goScreen('landing');
+
+});
 document.getElementById('cardUmNora').addEventListener('click', enterChat);
 document.getElementById('cardUmNora').addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') enterChat(); });
 
