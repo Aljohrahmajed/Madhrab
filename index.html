@@ -958,6 +958,7 @@ document.getElementById('textInput').addEventListener('keydown', e=>{
 if(msg.message_type === 'committed_transcript' && msg.text){
   committedTranscript = (committedTranscript + ' ' + msg.text).trim();
   partialTranscript = '';
+}
 });
 
     await new Promise((resolve, reject)=>{
