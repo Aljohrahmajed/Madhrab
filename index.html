@@ -182,6 +182,29 @@ img{max-width:100%; display:block;}
   border-bottom:1px solid var(--sand-dark); flex-shrink:0; z-index:5;
 }
 .chat-header .brand-mini{font-family:'Aref Ruqaa',serif; font-size:1.25rem; color:var(--coffee-dark);}
+ .chat-brand-group{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.back-btn{
+  width:32px;
+  height:32px;
+  border:none;
+  background:transparent;
+  color:var(--coffee-dark);
+  font-size:1.5rem;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.back-btn:hover{
+  background:var(--sand-dark);
+  border-radius:50%;
+} 
 .icon-btn{
   width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
   color:var(--coffee-dark); transition:background .2s ease;
@@ -484,11 +507,17 @@ img{max-width:100%; display:block;}
   <section id="screen-chat" class="screen">
     <div class="screen-inner">
       <header class="chat-header">
-        <span class="brand-mini">مَضْرِب</span>
-        <button class="icon-btn" id="btnDrawer" aria-label="القائمة">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-      </header>
+  <div class="chat-brand-group">
+    <button class="back-btn" id="btnBack" aria-label="رجوع">→</button>
+    <span class="brand-mini">مَضْرِب</span>
+  </div>
+
+  <button class="icon-btn" id="btnDrawer" aria-label="القائمة">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+</header>
 
       <div class="chat-body">
         <div class="char-panel" id="charPanel">
@@ -603,6 +632,11 @@ function goScreen(name){
   state.screen = name;
 }
 document.getElementById('btnStart').addEventListener('click', ()=>goScreen('select'));
+document.getElementById('btnBack').addEventListener('click', ()=>{
+
+  goScreen('select');
+
+});
 
 document.getElementById('cardUmNora').addEventListener('click', enterChat);
 document.getElementById('cardUmNora').addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') enterChat(); });
