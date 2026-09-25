@@ -833,16 +833,34 @@ function handleUserMessage(raw){
   collapsePanelIfMobile();
   addUserBubble(text);
 
-  const detectedProverb = extractProverbCandidate(text);
-  if(detectedProverb){
-    state.currentProverb = detectedProverb;
-  } else if(!state.currentProverb && !isFollowUpText(text)){
-    state.currentProverb = cleanArabicText(text);
-  }
+ const detectedProverb = extractProverbCandidate(text);
+const cleanedText = cleanArabicText(text);
 
-  askMadhrab(text);
+const greetings = [
+  'السلام عليكم',
+  'وعليكم السلام',
+  'هلا',
+  'هلا والله',
+  'مرحبا',
+  'صباح الخير',
+  'مساء الخير'
+];
+
+if (greetings.some(g => cleanedText.includes(g))) {
+  addAssistantBubble('وعليكم السلام، هلا والله. اسألني عن أي مثل سعودي ودك تعرفه.');
+  return;
 }
 
+if (detectedProverb) {
+  state.currentProverb = detectedProverb;
+} else if (!state.currentProverb && !isFollowUpText(text)) {
+  addAssistantBubble('اذكر لي المثل السعودي اللي ودك تعرف معناه.');
+  return;
+}
+
+askMadhrab(text);
+}
+  
 /* ======================================================================
    BACKEND INTEGRATION — مَضرِب /chat
 ====================================================================== */
