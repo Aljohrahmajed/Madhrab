@@ -847,14 +847,15 @@ const greetings = [
 ];
 
 if (greetings.some(g => cleanedText.includes(g))) {
-  addAssistantBubble('وعليكم السلام، هلا والله. اسألني عن أي مثل سعودي ودك تعرفه.');
+  addAiBubble('وعليكم السلام، هلا والله. اسألني عن أي مثل سعودي ودك تعرفه.');
   return;
 }
 
 if (detectedProverb) {
   state.currentProverb = detectedProverb;
 } else if (!state.currentProverb && !isFollowUpText(text)) {
-  addAssistantBubble('اذكر لي المثل السعودي اللي ودك تعرف معناه.');
+  addAiBubble
+    ('اذكر لي المثل السعودي اللي ودك تعرف معناه.');
   return;
 }
 
