@@ -452,7 +452,7 @@ img{max-width:100%; display:block;}
         <div class="hero-glow"></div>
         <div class="hero-figure"><img id="heroImg" src="" alt="أم نورة ترحب بالزائر"></div>
       </div>
-      <h1 class="tagline">وش معنى المثل ومتى يُنقال؟<br>تعال نسولف مع <em>أم نورة</em></h1>
+      <h1 class="tagline">وش معنى المثل ومتى يُنقال؟<br>تعال سولف <em>معنا</em></h1>
       <p class="sub-copy">حيّاك الله في مجلسها.. اعرف معاني الأمثال الشعبية وقصصها، وكيف تستخدمها في حياتك اليومية.</p>
       <button class="btn-primary" id="btnStart">حيّاك الله، ادخل المجلس <span class="arrow">←</span></button>
     </div>
@@ -879,6 +879,8 @@ document.getElementById('textInput').addEventListener('keydown', e=>{
   let sourceNode = null;
   let processorNode = null;
   let committedTranscript = '';
+  let partialTranscript = '';
+  let recordingStartedAt = 0;
 
   async function fetchScribeToken(){
     const res = await fetch(SCRIBE_TOKEN_URL, {
@@ -940,6 +942,8 @@ document.getElementById('textInput').addEventListener('keydown', e=>{
 
   async function startRecording(){
     committedTranscript = '';
+    partialTranscript = '';
+    recordingStartedAt = Date.now();
     const token = await fetchScribeToken();
     const url = `${SCRIBE_WS_URL}?model_id=scribe_v2_realtime&audio_format=pcm_16000&language_code=ar&commit_strategy=manual&token=${encodeURIComponent(token)}`;
     socket = new WebSocket(url);
@@ -947,10 +951,14 @@ document.getElementById('textInput').addEventListener('keydown', e=>{
     socket.addEventListener('message', (event)=>{
       let msg;
       try{ msg = JSON.parse(event.data); }catch(e){ return; }
-      if(msg.message_type === 'committed_transcript' && msg.text){
-        committedTranscript = (committedTranscript + ' ' + msg.text).trim();
-      }
-    });
+      if(msg.message_type === 'partial_transcript' && msg.text){
+  partialTranscript = msg.text.trim();
+}
+
+if(msg.message_type === 'committed_transcript' && msg.text){
+  committedTranscript = (committedTranscript + ' ' + msg.text).trim();
+  partialTranscript = '';
+});
 
     await new Promise((resolve, reject)=>{
       socket.addEventListener('open', ()=>resolve(), { once:true });
@@ -976,23 +984,50 @@ document.getElementById('textInput').addEventListener('keydown', e=>{
     if(audioCtx){ audioCtx.close(); audioCtx = null; }
   }
 
-  function stopRecording(){
-    return new Promise(resolve=>{
-      if(socket && socket.readyState === WebSocket.OPEN){
-        // empty final chunk with commit:true finalizes the last segment
-        socket.send(JSON.stringify({ message_type:'input_audio_chunk', audio_base_64:'', commit:true }));
-        setTimeout(()=>{
-          cleanupAudio();
-          if(socket) socket.close();
-          socket = null;
-          resolve(committedTranscript);
-        }, 2000); // brief wait for the final committed_transcript message
-      } else {
-        cleanupAudio();
-        resolve(committedTranscript);
-      }
-    });
+ async function stopRecording(){
+  const elapsed = Date.now() - recordingStartedAt;
+  const minimumRecordingTime = 2200;
+
+  if(elapsed < minimumRecordingTime){
+    await new Promise(resolve =>
+      setTimeout(resolve, minimumRecordingTime - elapsed)
+    );
   }
+
+  return new Promise(resolve=>{
+    if(socket && socket.readyState === WebSocket.OPEN){
+
+      socket.send(JSON.stringify({
+        message_type: 'input_audio_chunk',
+        audio_base_64: '',
+        commit: true
+      }));
+
+      setTimeout(()=>{
+        cleanupAudio();
+
+        if(socket) socket.close();
+        socket = null;
+
+        const finalText =
+          committedTranscript.trim() ||
+          partialTranscript.trim();
+
+        resolve(finalText);
+
+      }, 1200);
+
+    } else {
+      cleanupAudio();
+
+      const finalText =
+        committedTranscript.trim() ||
+        partialTranscript.trim();
+
+      resolve(finalText);
+    }
+  });
+}
 
   micBtn.addEventListener('click', async ()=>{
     if(!recording){
