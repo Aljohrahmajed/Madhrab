@@ -804,7 +804,10 @@ function askMadhrab(question){
   setCharState('thinking');
   fetch(`${MADHRAB_API_BASE}/chat`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+  'Content-Type': 'application/json',
+  'ngrok-skip-browser-warning': 'true'
+},
     body: JSON.stringify({ proverb: state.currentProverb || '', question: question })
   })
   .then(res=>{
@@ -878,7 +881,11 @@ document.getElementById('textInput').addEventListener('keydown', e=>{
   let committedTranscript = '';
 
   async function fetchScribeToken(){
-    const res = await fetch(SCRIBE_TOKEN_URL);
+    const res = await fetch(SCRIBE_TOKEN_URL, {
+  headers: {
+    'ngrok-skip-browser-warning': 'true'
+  }
+});
     if(!res.ok) throw new Error('token fetch failed');
     const data = await res.json();
     // support a couple of likely response shapes without assuming one exact key
