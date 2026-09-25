@@ -986,7 +986,7 @@ document.getElementById('textInput').addEventListener('keydown', e=>{
           if(socket) socket.close();
           socket = null;
           resolve(committedTranscript);
-        }, 900); // brief wait for the final committed_transcript message
+        }, 2000); // brief wait for the final committed_transcript message
       } else {
         cleanupAudio();
         resolve(committedTranscript);
