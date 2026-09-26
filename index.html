@@ -876,7 +876,7 @@ function askMadhrab(question){
   'Content-Type': 'application/json',
   'ngrok-skip-browser-warning': 'true'
 },
-    body: JSON.stringify({ proverb: state.currentProverb || '', question: question })
+    body: JSON.stringify({ proverb: '', question: question })
   })
   .then(res=>{
     if(!res.ok) throw new Error('bad response');
